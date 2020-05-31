@@ -1,14 +1,16 @@
 package ru.javawebinar.topjava.util;
 
 import ru.javawebinar.topjava.model.UserMeal;
-import ru.javawebinar.topjava.model.UserMealExcessAttribute;
 import ru.javawebinar.topjava.model.UserMealWithExcess;
+import ru.javawebinar.topjava.model.UserMealWithExcessAtomic;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -23,67 +25,100 @@ public class UserMealsUtil {
         );
 
         List<UserMealWithExcess> mealsTo = filteredByCycles(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
+        System.out.println("filteredByCycles");
         mealsTo.forEach(System.out::println);
 
-//        System.out.println(filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
+        List<UserMealWithExcessAtomic> mealsToOptional2 = filteredByCyclesOptional2(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
+        System.out.println("\nfilteredByCyclesOptional2");
+        mealsToOptional2.forEach(System.out::println);
+
+        System.out.println("\nfilteredByStreams");
+        List<UserMealWithExcess> mealsToStreams = filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
+        mealsToStreams.forEach(System.out::println);
     }
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        // Пытался уложиться в сложность O(n), не делать вложенные циклы
+        // filter all UserMeal[s] by time
+        List<UserMeal> filteredMeals = new ArrayList<>();
+        for (UserMeal meal : meals) {
+            LocalTime mealLocalTime = meal.getDateTime().toLocalTime();
+            if (TimeUtil.isBetweenHalfOpen(mealLocalTime, startTime, endTime)) {
+                filteredMeals.add(meal);
+            }
+        }
 
-        // Лист UserMealWithExcess, отфильтрованный по промежутку startTime - endTime (возвращаемое значение)
+        // calculate calories in dates
+        Map<LocalDate, Integer> caloriesInDate = new HashMap<>();
+        for (UserMeal meal : meals) {
+            LocalDate mealLocalDate = meal.getDateTime().toLocalDate();
+            Integer calories = caloriesInDate.getOrDefault(mealLocalDate, 0) + meal.getCalories();
+            caloriesInDate.put(mealLocalDate, calories);
+        }
+
+        // create list MealWithExcess (result)
         List<UserMealWithExcess> filteredMealsWithExcess = new ArrayList<>();
+        for (UserMeal meal : filteredMeals) {
+            filteredMealsWithExcess.add(new UserMealWithExcess(
+                    meal.getDateTime(),
+                    meal.getDescription(),
+                    meal.getCalories(),
+                    (caloriesInDate.get(meal.getDateTime().toLocalDate()) > caloriesPerDay)
+            ));
+        }
 
-        // Мап, содержащий excess значение для определенной даты
-        Map<LocalDate, UserMealExcessAttribute> mealExcessAttributes = new HashMap<>();
+        return filteredMealsWithExcess;
+    }
 
-        // Мап, содержащий количество каллорий, потребленных в определенную дату
+
+    public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        // calculate calories in dates
+        Map<LocalDate, Integer> caloriesInDate = meals.stream()
+                .collect(Collectors.groupingBy(meal -> meal.getDateTime().toLocalDate(),
+                        Collectors.summingInt(UserMeal::getCalories))
+                );
+
+        // filter by time and return UserMealWithExcess list
+        return meals.stream()
+                .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
+                .map(meal -> new UserMealWithExcess(
+                        meal.getDateTime(),
+                        meal.getDescription(),
+                        meal.getCalories(),
+                        caloriesInDate.get(meal.getDateTime().toLocalDate()) > caloriesPerDay))
+                .collect(Collectors.toList());
+    }
+
+    public static List<UserMealWithExcessAtomic> filteredByCyclesOptional2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        List<UserMealWithExcessAtomic> filteredMealsWithExcess = new ArrayList<>();
+        Map<LocalDate, AtomicBoolean> mealExcessAttributes = new HashMap<>();
         Map<LocalDate, Integer> mealDayCalories = new HashMap<>();
 
-        // 1. Идем по листу UserMeal
         for (UserMeal meal : meals) {
             LocalDate mealLocalDate = meal.getDateTime().toLocalDate();
             LocalTime mealLocalTime = meal.getDateTime().toLocalTime();
 
-            // 2. Получаем признак excess для даты meal (если нету - возвращает новый объект = false)
-            UserMealExcessAttribute excessForDate = mealExcessAttributes.getOrDefault(
+            // Get or create (if not exists) excess value
+            AtomicBoolean excessForDate = mealExcessAttributes.getOrDefault(
                     mealLocalDate,
-                    new UserMealExcessAttribute(false)
+                    new AtomicBoolean(false)
             );
 
-            // 3. Получаем количество калорий для даты meal (если нету, возвращает 0)
+            // Get calories for date, add record calories and put to map
             Integer caloriesForDate = mealDayCalories.getOrDefault(mealLocalDate, 0);
-
-            // 4. Приплюсовываем калории текущей записи к остальным дневным калориям и пишем обратно в мап
             caloriesForDate += meal.getCalories();
             mealDayCalories.put(mealLocalDate, caloriesForDate);
 
-            // 5. Если калорий больше, чем задано в условии (caloriesPerDay) -
-            // ставим признак excess для даты meal = true и пишем обратно в мап
-            excessForDate.setExcess(caloriesForDate > caloriesPerDay);
+            excessForDate.set(caloriesForDate > caloriesPerDay);
             mealExcessAttributes.put(mealLocalDate, excessForDate);
 
-            // 6. Если meal укладывается в фильтр по времени (startTime - endTime), то
             if (TimeUtil.isBetweenHalfOpen(mealLocalTime, startTime, endTime)) {
-                // 7. Пишем его в лист filteredMealsWithExceed (отфильтрованный лист, возвращаемое значение)
-                filteredMealsWithExcess.add(new UserMealWithExcess(
+                filteredMealsWithExcess.add(new UserMealWithExcessAtomic(
                         meal.getDateTime(),
                         meal.getDescription(),
                         meal.getCalories(),
                         mealExcessAttributes.get(mealLocalDate)));
-                // Для того, чтобы excess обновился во всех записях meal после превышения кол-ва калорий, я вынес
-                // это поле из примитива в отдельный объект.
-                // Этот объект создается для каждой даты один раз (во время обращения к мапе - getOrDefault -> default)
-                // Дальнейшая работа идет с тем же объектом, через сеттер, новый мы не создаем
-                // При создании UserMealWithExcess получается так, что в каждый объект одной даты попадает одинаковая ссылка
-                // на объект UserMealExcessAttribute, поэтому после превышения количества калорий для даты - он везде станет true
             }
         }
         return filteredMealsWithExcess;
-    }
-
-    public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        // TODO Implement by streams
-        return null;
     }
 }
