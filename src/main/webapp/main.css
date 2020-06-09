@@ -1,0 +1,17 @@
+div.field {
+    padding-bottom: 5px;
+}
+div.field label {
+    display: block;
+    float: left;
+    width: 100px;
+    height: 15px;
+}
+
+.meal-record_excess {
+    color: #ff0000;
+}
+
+.meal-record_not_excess {
+    color: #008000;
+}
