@@ -10,7 +10,7 @@
 <hr>
 <h2>Meals</h2>
 <jsp:useBean id="meals" scope="request" type="java.util.List<ru.javawebinar.topjava.model.MealTo>"/>
-<jsp:useBean id="localDateTimeFormat" scope="request" type="java.text.SimpleDateFormat"/>
+<jsp:useBean id="localDateTimeFormat" scope="request" type="java.time.format.DateTimeFormatter"/>
 <table width="700" border="1">
     <thead>
     <tr>
@@ -25,10 +25,10 @@
         <tr record_id="${meal.id}" class="${meal.excess
                 ? 'meal-record_excess'
                 : 'meal-record_not_excess'}">
-            <td name="dateTime" rawvalue="${meal.dateTime}">${localDateTimeFormat.parse(meal.dateTime)}</td>
+            <td name="dateTime" rawvalue="${meal.dateTime}">${meal.dateTime.format(localDateTimeFormat)}</td>
             <td name="description">${meal.description}</td>
             <td name="calories">${meal.calories}</td>
-            <td name="edit"><a href="#" onclick="fillForm(${meal.id})">Ред.</a></td>
+            <td name="edit"><a href="javascript:void(0);" onclick="fillForm(${meal.id})">Ред.</a></td>
             <td name="delete"><a href="?action=delete&id=${meal.id}">Удалить</a></td>
         </tr>
     </c:forEach>
@@ -36,7 +36,7 @@
 </table>
 <br>
 
-<form method="POST" action="#" id="meal_form">
+<form method="POST" action="" id="meal_form">
     <input type="hidden" id="form_id" name="id" value="-1">
     <div class="field">
         <label for="form_dateTime">Дата / Время: </label>
@@ -48,7 +48,7 @@
     </div>
     <div class="field">
         <label for="form_calories">Калории: </label>
-        <input id="form_calories" name="calories">
+        <input type="number" id="form_calories" name="calories">
     </div>
     <div class="field">
         <label></label>

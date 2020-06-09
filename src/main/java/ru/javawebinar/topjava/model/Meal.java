@@ -19,6 +19,11 @@ public class Meal {
         this.calories = calories;
     }
 
+    public Meal(int id, LocalDateTime dateTime, String description, int calories){
+        this(dateTime, description, calories);
+        this.id = id;
+    }
+
     public LocalDateTime getDateTime() {
         return dateTime;
     }
