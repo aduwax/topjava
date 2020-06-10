@@ -21,14 +21,14 @@ import java.util.Objects;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
+    private static final int CALORIES_PER_DAY = 2000;
     private static final Logger log = getLogger(MealServlet.class);
     private static DateTimeFormatter dateTimeFormatter;
-    private static MealDao meals;
-    private static final int CALORIES_PER_DAY = 2000;
+    private MealDao mealDao;
 
     @Override
     public void init() {
-        meals = new MealMemoryDao();
+        mealDao = new MealMemoryDao();
         dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm");
     }
 
@@ -36,12 +36,14 @@ public class MealServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         if (Objects.equals(action, "delete")) {
-            doDelete(request, response);
+            long id = Long.parseLong(request.getParameter("id"));
+            log.info("Delete meal with id {}", id);
+            mealDao.delete(id);
             response.sendRedirect("meals");
         } else {
             log.info("Get meals list");
             request.setAttribute("localDateTimeFormat", dateTimeFormatter);
-            List<MealTo> mealsTo = MealsUtil.filteredByStreams(meals.getAll(), LocalTime.MIN, LocalTime.MAX, CALORIES_PER_DAY);
+            List<MealTo> mealsTo = MealsUtil.filteredByStreams(mealDao.getAll(), LocalTime.MIN, LocalTime.MAX, CALORIES_PER_DAY);
             request.setAttribute("meals", mealsTo);
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
         }
@@ -60,19 +62,12 @@ public class MealServlet extends HttpServlet {
         if (id >= 0) {
             log.info("Update meal {} with id {}", meal.toString(), id);
             meal.setId(id);
-            meals.update(meal);
+            mealDao.update(meal);
         } else {
             log.info("Add new meal: {}", meal.toString());
-            meals.create(meal);
+            mealDao.create(meal);
         }
 
         response.sendRedirect("meals");
-    }
-
-    @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        long id = Long.parseLong(request.getParameter("id"));
-        log.info("Delete meal with id {}", id);
-        meals.delete(id);
     }
 }

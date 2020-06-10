@@ -40,20 +40,20 @@
     <input type="hidden" id="form_id" name="id" value="-1">
     <div class="field">
         <label for="form_dateTime">Дата / Время: </label>
-        <input id="form_dateTime" type="datetime-local" name="dateTime">
+        <input id="form_dateTime" type="datetime-local" required name="dateTime">
     </div>
     <div class="field">
         <label for="form_description">Описание: </label>
-        <input id="form_description" name="description">
+        <input id="form_description" required name="description">
     </div>
     <div class="field">
         <label for="form_calories">Калории: </label>
-        <input type="number" id="form_calories" name="calories">
+        <input type="number" id="form_calories" required name="calories">
     </div>
     <div class="field">
         <label></label>
         <input id="form_send" type="submit" value="Добавить">
-        <input id="form_reset" type="reset" onclick="clearForm()">
+        <input id="form_reset" type="reset" required onclick="clearForm()">
     </div>
 </form>
 

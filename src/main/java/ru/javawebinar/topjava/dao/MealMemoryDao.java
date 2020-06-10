@@ -7,12 +7,12 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class MealMemoryDao implements MealDao {
-    private final ConcurrentMap<Long, Meal> meals = new ConcurrentHashMap<>();
+    private final Map<Long, Meal> meals = new ConcurrentHashMap<>();
     private final AtomicLong id = new AtomicLong(0);
 
     public MealMemoryDao() {
@@ -50,11 +50,7 @@ public class MealMemoryDao implements MealDao {
 
     @Override
     public Meal update(Meal meal) {
-        if (meals.get(meal.getId()) != null) {
-            meals.put(meal.getId(), meal);
-            return meal;
-        }
-        return null;
+        return meals.computeIfPresent(meal.getId(), (k, v) -> meal);
     }
 
     @Override
