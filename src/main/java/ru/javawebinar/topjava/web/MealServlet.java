@@ -13,9 +13,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
+
+import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDateOrNull;
+import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTimeOrNull;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
@@ -56,12 +61,6 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-
-        String startDate = request.getParameter("startDate");
-        String startTime = request.getParameter("startTime");
-        String endDate = request.getParameter("endDate");
-        String endTime = request.getParameter("endTime");
-
         switch (action == null ? "all" : action) {
             case "delete":
                 int id = getId(request);
@@ -80,7 +79,11 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
-                request.setAttribute("meals", controller.getAll(startDate, startTime, endDate, endTime));
+                LocalDate startDate = parseLocalDateOrNull(request.getParameter("startDate"));
+                LocalDate endDate = parseLocalDateOrNull(request.getParameter("endDate"));
+                LocalTime startTime = parseLocalTimeOrNull(request.getParameter("startTime"));
+                LocalTime endTime = parseLocalTimeOrNull(request.getParameter("endTime"));
+                request.setAttribute("meals", controller.getByDateTime(startDate, endDate, startTime, endTime));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }

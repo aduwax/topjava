@@ -16,19 +16,19 @@
             color: red;
         }
     </style>
-    <script>
-        document.addEventListener("DOMContentLoaded", function (event) {
-            var searchParams = window.location.search.substr(1).split('&'); // substr(1) to remove the `#`
-            console.log(searchParams);
-            for (var i = 0; i < searchParams.length; i++) {
-                var p = searchParams[i].split('=');
-                console.log(p[0]);
-                console.log(p[1]);
-                console.log(document.getElementById(p[0]))
-                document.getElementById(p[0]).value = decodeURIComponent(p[1]);
-            }
-        });
-    </script>
+    <%--    <script>--%>
+    <%--        document.addEventListener("DOMContentLoaded", function (event) {--%>
+    <%--            var searchParams = window.location.search.substr(1).split('&'); // substr(1) to remove the `#`--%>
+    <%--            console.log(searchParams);--%>
+    <%--            for (var i = 0; i < searchParams.length; i++) {--%>
+    <%--                var p = searchParams[i].split('=');--%>
+    <%--                console.log(p[0]);--%>
+    <%--                console.log(p[1]);--%>
+    <%--                console.log(document.getElementById(p[0]))--%>
+    <%--                document.getElementById(p[0]).value = decodeURIComponent(p[1]);--%>
+    <%--            }--%>
+    <%--        });--%>
+    <%--    </script>--%>
 </head>
 <body>
 <section>
@@ -65,10 +65,14 @@
     </table>
     <form>
         <p>
-            <input type="date" placeholder="От даты (включая)" id="startDate" name="startDate">
-            <input type="date" placeholder="До даты (включая)" id="endDate" name="endDate">
-            <input type="time" placeholder="От времени (включая)" id="startTime" name="startTime">
-            <input type="time" placeholder="До времени (исключая)" id="endTime" name="endTime">
+            <input type="date" placeholder="От даты (включая)" id="startDate" name="startDate"
+                   value="<c:out value="${param['startDate']}"/>">
+            <input type="date" placeholder="До даты (исключая)" id="endDate" name="endDate"
+                   value="<c:out value="${param['endDate']}"/>">
+            <input type="time" placeholder="От времени (включая)" id="startTime" name="startTime"
+                   value="<c:out value="${param['startTime']}"/>">
+            <input type="time" placeholder="До времени (исключая)" id="endTime" name="endTime"
+                   value="<c:out value="${param['endTime']}"/>">
         </p>
         <p>
             <input type="submit" value="Фильтровать" formaction="" formmethod="get">

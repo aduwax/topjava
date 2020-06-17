@@ -2,6 +2,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Java Enterprise (Topjava)</title>
+    <script>
+        function auth() {
+            const auth_ids = document.getElementById('auth_ids');
+            const auth_form = document.getElementById('auth_form');
+            auth_form.action = auth_ids.options[auth_ids.selectedIndex].value;
+            return auth_form.action;
+        }
+    </script>
 </head>
 <body>
 <h3>Проект <a href="https://github.com/JavaWebinar/topjava" target="_blank">Java Enterprise (Topjava)</a></h3>
@@ -11,9 +19,12 @@
     <li><a href="meals">Meals</a></li>
 </ul>
 <h3>Auth as:</h3>
-<select onclick="location = this.value;">
-    <option value="users?action=auth&id=1">1</option>
-    <option value="users?action=auth&id=2">2</option>
-</select>
+<form method="post" id="auth_form" onsubmit="auth()">
+    <select id=auth_ids>
+        <option value="users?action=auth&id=1">1</option>
+        <option value="users?action=auth&id=2">2</option>
+    </select>
+    <input type="submit">
+</form>
 </body>
 </html>
