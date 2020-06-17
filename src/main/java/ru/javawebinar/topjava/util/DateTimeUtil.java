@@ -34,22 +34,6 @@ public class DateTimeUtil {
         return localTime;
     }
 
-//    public static boolean isBetweenHalfOpenDateTime(LocalDateTime ldt, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-//        return ldt.compareTo(startDateTime) >= 0 && ldt.compareTo(endDateTime) < 0;
-//    }
-//
-//    public static LocalDateTime parse(String localDate, String localTime, LocalDateTime defaultValue) {
-//        return LocalDateTime.of(
-//                LocalDate.parse(localDate != null && !localDate.isEmpty()
-//                        ? localDate
-//                        : defaultValue.toLocalDate().toString()),
-//                LocalTime.parse(localTime != null && !localTime.isEmpty()
-//                        ? localTime
-//                        : defaultValue.toLocalTime().toString()
-//                )
-//        );
-//    }
-
     public static String toString(LocalDateTime ldt) {
         return ldt == null ? "" : ldt.format(DATE_TIME_FORMATTER);
     }

@@ -16,19 +16,6 @@
             color: red;
         }
     </style>
-    <%--    <script>--%>
-    <%--        document.addEventListener("DOMContentLoaded", function (event) {--%>
-    <%--            var searchParams = window.location.search.substr(1).split('&'); // substr(1) to remove the `#`--%>
-    <%--            console.log(searchParams);--%>
-    <%--            for (var i = 0; i < searchParams.length; i++) {--%>
-    <%--                var p = searchParams[i].split('=');--%>
-    <%--                console.log(p[0]);--%>
-    <%--                console.log(p[1]);--%>
-    <%--                console.log(document.getElementById(p[0]))--%>
-    <%--                document.getElementById(p[0]).value = decodeURIComponent(p[1]);--%>
-    <%--            }--%>
-    <%--        });--%>
-    <%--    </script>--%>
 </head>
 <body>
 <section>
