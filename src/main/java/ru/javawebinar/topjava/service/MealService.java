@@ -11,10 +11,8 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static ru.javawebinar.topjava.util.DateTimeUtil.isBetweenHalfOpen;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
@@ -44,11 +42,8 @@ public class MealService {
         return MealsUtil.getTos(repository.getAll(userId), caloriesPerDay);
     }
 
-    public List<MealTo> getByDateTime(int userId, int caloriesPerDate, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
-        return getAll(userId, caloriesPerDate).stream()
-                .filter(meal -> isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
-                .filter(meal -> isBetweenHalfOpen(meal.getDateTime().toLocalDate(), startDate, endDate))
-                .collect(Collectors.toList());
+    public List<MealTo> getByDateTime(int userId, int caloriesPerDay, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        return MealsUtil.getFilteredTos(repository.getByDate(userId, startDate, endDate), caloriesPerDay, startTime, endTime);
     }
 
     public void update(Meal meal, int userId) {
