@@ -10,7 +10,9 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -76,7 +78,9 @@ public class MealServiceTest extends AbstractServiceTest {
     @Test
     public void create() {
         Meal newMeal = service.create(getNew(), USER_ID);
-        assertNotNull(newMeal);
+        // Check new meal id
+        assertThat(newMeal.getId()).isEqualTo(NEW_MEAL_ID);
+        // Check other data in new meal
         assertMatch(service.get(newMeal.getId(), USER_ID), getNew(), true);
     }
 }

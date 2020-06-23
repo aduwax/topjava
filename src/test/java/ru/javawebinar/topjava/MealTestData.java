@@ -9,6 +9,7 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MealTestData {
+    public static final int NEW_MEAL_ID = 100009;
     // User meal
     public static final int MEAL_BREAKFAST_ID = 100002;
     public static final int MEAL_LUNCH_ID = 100003;
