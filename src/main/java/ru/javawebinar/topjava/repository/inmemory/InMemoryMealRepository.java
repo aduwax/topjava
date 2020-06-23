@@ -63,7 +63,7 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     public Map<Integer, Meal> getUserMealsMap(int userId) {
-        return repository.getOrDefault(userId, new ConcurrentHashMap<>());
+        return repository.computeIfAbsent(userId, (uid) -> new ConcurrentHashMap<>());
     }
 
     private List<Meal> filterByPredicate(Collection<Meal> meals, Predicate<Meal> filter) {
