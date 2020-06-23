@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository;
-import ru.javawebinar.topjava.repository.inmemory.InMemoryUserTestRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.Arrays;
@@ -37,7 +36,7 @@ public class InMemoryAdminRestControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        InMemoryUserTestRepository.init(repository);
+        repository.init();
     }
 
     @Test

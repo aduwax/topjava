@@ -49,15 +49,15 @@ public class MealServiceTest extends AbstractServiceTest {
     public void getBetweenInclusive() {
         List<Meal> mealsBetweenInclusive = service.getBetweenInclusive(
                 LocalDate.of(2020, 1, 10),
-                LocalDate.of(2020, 1, 11),
+                LocalDate.of(2020, 1, 12),
                 USER_ID);
-        assertMatch(mealsBetweenInclusive, MEAL_LUNCH, MEAL_BREAKFAST);
+        assertMatch(mealsBetweenInclusive, MEAL_DINNER, MEAL_LUNCH, MEAL_BREAKFAST);
     }
 
     @Test
     public void getAll() {
         List<Meal> all = service.getAll(USER_ID);
-        assertMatch(all, MEAL_DINNER, MEAL_LUNCH, MEAL_BREAKFAST);
+        assertMatch(all, MEAL_NIGHT_DINNER, MEAL_DINNER, MEAL_LUNCH, MEAL_BREAKFAST);
     }
 
     @Test
@@ -75,6 +75,8 @@ public class MealServiceTest extends AbstractServiceTest {
 
     @Test
     public void create() {
-        assertNotNull(service.create(getNew(), USER_ID));
+        Meal newMeal = service.create(getNew(), USER_ID);
+        assertNotNull(newMeal);
+        assertMatch(service.get(newMeal.getId(), USER_ID), getNew(), true);
     }
 }

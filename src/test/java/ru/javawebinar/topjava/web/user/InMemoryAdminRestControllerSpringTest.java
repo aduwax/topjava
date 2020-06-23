@@ -9,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository;
-import ru.javawebinar.topjava.repository.inmemory.InMemoryUserTestRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import static ru.javawebinar.topjava.UserTestData.NOT_FOUND;
@@ -28,7 +27,7 @@ public class InMemoryAdminRestControllerSpringTest {
 
     @Before
     public void setUp() throws Exception {
-        InMemoryUserTestRepository.init(repository);
+        repository.init();
     }
 
     @Test

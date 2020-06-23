@@ -24,3 +24,15 @@ VALUES ('2020-01-10T13:00:00', 'Обед', 500, 100000);
 
 INSERT INTO meals (datetime, description, calories, user_id)
 VALUES ('2020-01-12T19:00:00', 'Ужин', 600, 100000);
+
+INSERT INTO meals (datetime, description, calories, user_id)
+VALUES ('2020-01-13T00:00:00', 'Поздний перекус', 300, 100000);
+
+INSERT INTO meals (datetime, description, calories, user_id)
+VALUES ('2020-01-11T11:00:00', 'Завтрак', 450, 100001);
+
+INSERT INTO meals (datetime, description, calories, user_id)
+VALUES ('2020-01-11T14:00:00', 'Обед', 550, 100001);
+
+INSERT INTO meals (datetime, description, calories, user_id)
+VALUES ('2020-01-12T19:00:00', 'Ужин', 650, 100001);

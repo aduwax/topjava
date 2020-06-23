@@ -74,7 +74,7 @@ public class JdbcMealRepository implements MealRepository {
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         return jdbcTemplate.query("SELECT * FROM meals " +
-                "WHERE user_id=? AND datetime >= ? AND datetime <= ?" +
+                "WHERE user_id=? AND datetime >= ? AND datetime < ?" +
                 "ORDER BY datetime DESC", ROW_MAPPER, userId, startDate, endDate);
     }
 }

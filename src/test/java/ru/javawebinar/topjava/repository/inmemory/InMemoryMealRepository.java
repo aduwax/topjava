@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.repository.inmemory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.Util;
@@ -18,12 +19,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static ru.javawebinar.topjava.MealTestData.*;
+
 @Repository
 public class InMemoryMealRepository implements MealRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryMealRepository.class);
 
     // Map  userId -> mealRepository
     final Map<Integer, InMemoryBaseRepository<Meal>> usersMealsMap = new ConcurrentHashMap<>();
+
+    public void init() {
+        InMemoryBaseRepository<Meal> mealInMemoryBaseRepository = new InMemoryBaseRepository<>();
+        mealInMemoryBaseRepository.map.put(MEAL_BREAKFAST_ID, MEAL_BREAKFAST);
+        mealInMemoryBaseRepository.map.put(MEAL_LUNCH_ID, MEAL_LUNCH);
+        mealInMemoryBaseRepository.map.put(MEAL_DINNER_ID, MEAL_DINNER);
+        usersMealsMap.clear();
+        usersMealsMap.put(UserTestData.USER_ID, mealInMemoryBaseRepository);
+    }
 
     @Override
     public Meal save(Meal meal, int userId) {
