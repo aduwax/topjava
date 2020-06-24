@@ -10,7 +10,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -34,6 +33,11 @@ public class MealServiceTest extends AbstractServiceTest {
     @Test
     public void getNotFound() {
         assertThrows(NotFoundException.class, () -> service.get(MEAL_BREAKFAST_ID, UserTestData.ADMIN_ID));
+    }
+
+    @Test
+    public void getNotFoundBecauseNotExists() {
+        assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND_ID, USER_ID));
     }
 
     @Test
@@ -78,9 +82,9 @@ public class MealServiceTest extends AbstractServiceTest {
     @Test
     public void create() {
         Meal newMeal = service.create(getNew(), USER_ID);
-        // Check new meal id
-        assertThat(newMeal.getId()).isEqualTo(NEW_MEAL_ID);
-        // Check other data in new meal
-        assertMatch(service.get(newMeal.getId(), USER_ID), getNew(), true);
+        Meal expectedMeal = getNew();
+        expectedMeal.setId(NEW_MEAL_ID);
+        assertMatch(newMeal, expectedMeal);
+        assertMatch(service.get(newMeal.getId(), USER_ID), expectedMeal);
     }
 }
