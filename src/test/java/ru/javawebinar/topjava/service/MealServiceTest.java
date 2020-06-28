@@ -1,7 +1,14 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -9,9 +16,13 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -28,6 +39,28 @@ public class MealServiceTest {
 
     @Autowired
     private MealService service;
+
+    private static final Map<String, Long> testsExecutionTime = new HashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
+
+    @ClassRule
+    public static final ExternalResource resource = new ExternalResource() {
+        @Override
+        protected void after() {
+            testsExecutionTime.forEach((k, v) -> log.info("Test: {}; Time: {} ms", k, v));
+        }
+    };
+
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            String methodName = description.getMethodName();
+            long ms = TimeUnit.NANOSECONDS.toMicros(nanos);
+            log.info("Test {} finished! Execution time: {} ms", methodName, ms);
+            testsExecutionTime.put(methodName, ms);
+        }
+    };
 
     @Test
     public void delete() throws Exception {
