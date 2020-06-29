@@ -1,9 +1,8 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.ClassRule;
+import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExternalResource;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
@@ -14,14 +13,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
+import ru.javawebinar.topjava.FormattedTable;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
@@ -40,25 +38,22 @@ public class MealServiceTest {
     @Autowired
     private MealService service;
 
-    private static final Map<String, Long> testsExecutionTime = new HashMap<>();
+    private static final FormattedTable testsExecutionTime = new FormattedTable("Test name", "Execution time");
     private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
 
-    @ClassRule
-    public static final ExternalResource resource = new ExternalResource() {
-        @Override
-        protected void after() {
-            testsExecutionTime.forEach((k, v) -> log.info("Test: {}; Time: {} ms", k, v));
-        }
-    };
+    @AfterClass
+    public static void afterAll() {
+        log.info(testsExecutionTime.toString());
+    }
 
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
             String methodName = description.getMethodName();
-            long ms = TimeUnit.NANOSECONDS.toMicros(nanos);
+            long ms = TimeUnit.NANOSECONDS.toMillis(nanos);
             log.info("Test {} finished! Execution time: {} ms", methodName, ms);
-            testsExecutionTime.put(methodName, ms);
+            testsExecutionTime.add(methodName, ms);
         }
     };
 
