@@ -15,9 +15,8 @@ public class FormattedTable {
 
     public FormattedTable(int columnLength, String... columnNames) {
         tableSize = columnNames.length;
-        format = repeat("| %" + columnLength + "s ", tableSize) + "|";
-        String columnFormat = "\033[1;94m" + format + "\u001B[0m";
-        lines.add(String.format(columnFormat, columnNames));
+        format = repeat("| %-" + columnLength + "s ", tableSize) + "|";
+        add(columnNames);
     }
 
     public void add(Object... data) {
@@ -25,10 +24,11 @@ public class FormattedTable {
     }
 
     private String repeat(String string, int count) {
+        StringBuilder repeated = new StringBuilder(string);
         for (int i = 1; i < count; i++) {
-            string += string;
+            repeated.append(string);
         }
-        return string;
+        return repeated.toString();
     }
 
     @Override

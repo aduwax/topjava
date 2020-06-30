@@ -16,7 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.FormattedTable;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
-import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -38,24 +37,42 @@ public class MealServiceTest {
     @Autowired
     private MealService service;
 
-    private static final FormattedTable testsExecutionTime = new FormattedTable("Test name", "Execution time");
-    private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
+    private static final FormattedTable testsExecutionTime = new FormattedTable("Test name", "Status", "Execution time");
+    private static boolean testsFailed = false;
+    private static final Logger log = LoggerFactory.getLogger("colored-logger");
 
     @AfterClass
     public static void afterAll() {
-        log.info(testsExecutionTime.toString());
+        if (!testsFailed) {
+            log.info(testsExecutionTime.toString());
+        } else {
+            log.error(testsExecutionTime.toString());
+        }
     }
 
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
         @Override
-        protected void finished(long nanos, Description description) {
-            String methodName = description.getMethodName();
-            long ms = TimeUnit.NANOSECONDS.toMillis(nanos);
-            log.info("Test {} finished! Execution time: {} ms", methodName, ms);
-            testsExecutionTime.add(methodName, ms);
+        protected void failed(long nanos, Throwable e, Description description) {
+            printAndAddTestResult(description.getMethodName(), nanos, false);
+        }
+
+        @Override
+        protected void succeeded(long nanos, Description description) {
+            printAndAddTestResult(description.getMethodName(), nanos, true);
         }
     };
+
+    private void printAndAddTestResult(String methodName, long nanos, boolean success) {
+        long ms = TimeUnit.NANOSECONDS.toMillis(nanos);
+        testsExecutionTime.add(methodName, success ? "Passed" : "Failed", ms);
+        if (success) {
+            log.info("Test {} finished with status \"PASSED\"! Execution time: {} ms", methodName, ms);
+        } else {
+            testsFailed = true;
+            log.error("\"Test {} finished with status \"FAILED\"! Execution time: {} ms", methodName, ms);
+        }
+    }
 
     @Test
     public void delete() throws Exception {

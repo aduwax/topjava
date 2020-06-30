@@ -11,9 +11,38 @@
         </encoder>
     </appender>
 
+    <appender name="colored-error" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) %boldRed(%msg) %n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="colored-info" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) %boldGreen(%msg) %n</pattern>
+        </encoder>
+    </appender>
+
     <logger name="org.postgresql" level="debug"/>
     <logger name="org.springframework.jdbc" level="info"/>
     <logger name="ru.javawebinar.topjava" level="debug"/>
+
+    <logger name="colored-logger" level="info" additivity="false">
+        <appender-ref ref="colored-info"/>
+        <appender-ref ref="colored-error"/>
+    </logger>
 
     <root level="INFO">
         <appender-ref ref="console"/>
