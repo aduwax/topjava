@@ -54,8 +54,8 @@ public class User extends AbstractNamedEntity {
     @Range(min = 10, max = 10000)
     private int caloriesPerDay = DEFAULT_CALORIES_PER_DAY;
 
-    @OneToMany
-    @JoinColumn(name = "user_id", updatable = false, insertable = false)
+    @OneToMany(mappedBy = "user")
+    @OrderBy("dateTime desc")
     private List<Meal> meals;
 
     public User() {
