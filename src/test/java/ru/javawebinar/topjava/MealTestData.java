@@ -1,11 +1,13 @@
 package ru.javawebinar.topjava;
 
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.User;
 
 import java.time.Month;
 import java.util.List;
 
 import static java.time.LocalDateTime.of;
+import static ru.javawebinar.topjava.UserTestData.USER;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class MealTestData {
@@ -31,7 +33,24 @@ public class MealTestData {
         return new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "Созданный ужин", 300);
     }
 
+    public static Meal getNewWithUser() {
+        return attachUser(getNew(), USER);
+    }
+
     public static Meal getUpdated() {
         return new Meal(MEAL1_ID, MEAL1.getDateTime(), "Обновленный завтрак", 200);
+    }
+
+    public static Meal getUpdatedWithUser() {
+        return attachUser(getUpdated(), USER);
+    }
+
+    public static Meal getWithUser() {
+        return attachUser(MEAL1, USER);
+    }
+
+    private static Meal attachUser(Meal meal, User user) {
+        meal.setUser(user);
+        return meal;
     }
 }
