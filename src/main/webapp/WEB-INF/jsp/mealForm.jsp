@@ -5,20 +5,21 @@
 <html>
 <head>
     <title>Meal</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
+    <base href="${pageContext.request.contextPath}/">
+    <link rel="stylesheet" href="resources/css/style.css">
 </head>
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 
 <section>
     <hr>
-    <h2><spring:message code="meal.edit"/></h2>
+    <h2><spring:message code="${action == 'create' ? 'meal.add' : 'meal.edit'}"/></h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
-    <form method="post" action="${pageContext.request.contextPath}/meals">
+    <form method="post" action="meals">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt><spring:message code="meal.table.title.date"/>:</dt>
-            <dd><input type="datetime-local" value="${meal.dateTime}" name=required></dd>
+            <dd><input type="datetime-local" value="${meal.dateTime}" name=dateTime required></dd>
         </dl>
         <dl>
             <dt><spring:message code="meal.table.title.description"/>:</dt>
