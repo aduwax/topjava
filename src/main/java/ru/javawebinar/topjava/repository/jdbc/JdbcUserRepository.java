@@ -108,7 +108,7 @@ public class JdbcUserRepository implements UserRepository {
     private static class UserExtractor implements ResultSetExtractor<List<User>> {
         @Override
         public List<User> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-            Map<Integer, User> data = new HashMap<>();
+            Map<Integer, User> data = new LinkedHashMap<>();
             while (resultSet.next()) {
                 User user = data.computeIfAbsent(resultSet.getInt("id"), (k) -> {
                     User newUser = new User();
@@ -127,13 +127,10 @@ public class JdbcUserRepository implements UserRepository {
                     return newUser;
                 });
 
-                try {
-                    Set<Role> roles = user.getRoles();
-                    roles.add(Enum.valueOf(Role.class, resultSet.getString("role")));
-                    user.setRoles(roles);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                Set<Role> roles = EnumSet.noneOf(Role.class);
+                roles = user.getRoles();
+                roles.add(Enum.valueOf(Role.class, resultSet.getString("role")));
+                user.setRoles(roles);
             }
             return new ArrayList<>(data.values());
         }

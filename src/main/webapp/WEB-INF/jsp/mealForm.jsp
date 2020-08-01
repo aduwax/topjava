@@ -3,17 +3,14 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <html>
-<head>
-    <title>Meal</title>
-    <base href="${pageContext.request.contextPath}/">
-    <link rel="stylesheet" href="resources/css/style.css">
-</head>
+<jsp:include page="fragments/headTag.jsp"/>
+
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 
 <section>
     <hr>
-    <h2><spring:message code="${action == 'create' ? 'meal.add' : 'meal.edit'}"/></h2>
+    <h2><spring:message code="${meal['new'] ? 'meal.add' : 'meal.edit'}"/></h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post" action="meals">
         <input type="hidden" name="id" value="${meal.id}">
